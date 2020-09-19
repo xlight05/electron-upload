@@ -19,25 +19,11 @@
     const { dialog } = require('electron').remote;
     var fs = require('fs');
 
-
-    // document.getElementById('select-file').addEventListener('click', function (event) {
-    //     dialog.showOpenDialog({
-    //         properties: ['openFile']
-    //     }, function (files) {
-    //         if (files !== undefined) {
-    //           alert(files);
-    //             // handle files
-    //         } else {
-    //           alert("No files selected");
-    //         }
-    //     });
-    // });
-
     document.getElementById('select-file').addEventListener('click', function () {
       let dialogOptions = {
-       properties: ['openFile'],
-     };
-     let isDelete = true;
+        properties: ['openFile'],
+      };
+      let isDelete = true;
       dialog.showOpenDialog(
         dialogOptions
       ).then((fileNames) => {
@@ -46,9 +32,43 @@
         } else {
           console.log('file:', fileNames.filePaths[0]);
           var filepath = fileNames.filePaths[0];
-          if (isDelete) {
+
+          fs.readFile(filePath, (err, imageData) => {
+            if (err) {
+              throw err;
+            }
+          });
+
+          const formData = new FormData();
+
+          formData.append('file', imageData, {
+            filepath: filePath,
+          });
+
+          fetch('http://127.0.0.1:5000/predict', {
+            method: 'POST',
+            body: formData,
+          })
+            .then(response => response.json())
+            .then(result => {
+              console.log('Success:', result);
+
+              const prediction = result[0]['prediction']
+              // // let result = ''
+              const isMalicious = prediction == 'malicious' ? true : false
+
+              if (isMalicious) {
             deleteFile(filepath)
-          }
+            }
+
+              // const cardResult = buildResultBody(isMalicious)
+
+              // document.querySelector('.result-card').innerHTML = cardResult
+
+            })
+            .catch(error => {
+              console.error('Error:', error);
+            });
         }
       }).catch(err => console.log('Handle Error', err))
     }, false);
@@ -80,6 +100,11 @@
           alert("This file doesn't exist, cannot delete");
         }
       });
+    }
+
+    function upload_file() {
+
+
     }
   </script>
 </body>
