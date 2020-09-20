@@ -33,42 +33,41 @@
           console.log('file:', fileNames.filePaths[0]);
           var filepath = fileNames.filePaths[0];
 
-          fs.readFile(filePath, (err, imageData) => {
+          fs.readFile(filepath, (err, imageData) => {
             if (err) {
               throw err;
             }
-          });
+            const formData = new FormData();
 
-          const formData = new FormData();
-
-          formData.append('file', imageData, {
-            filepath: filePath,
-          });
-
-          fetch('http://127.0.0.1:5000/predict', {
-            method: 'POST',
-            body: formData,
-          })
-            .then(response => response.json())
-            .then(result => {
-              console.log('Success:', result);
-
-              const prediction = result[0]['prediction']
-              // // let result = ''
-              const isMalicious = prediction == 'malicious' ? true : false
-
-              if (isMalicious) {
-            deleteFile(filepath)
-            }
-
-              // const cardResult = buildResultBody(isMalicious)
-
-              // document.querySelector('.result-card').innerHTML = cardResult
-
-            })
-            .catch(error => {
-              console.error('Error:', error);
+            formData.append('file', imageData, {
+              filepath: filepath,
             });
+
+            fetch('http://127.0.0.1:5000/predict', {
+              method: 'POST',
+              body: formData,
+            })
+              .then(response => response.json())
+              .then(result => {
+                console.log('Success:', result);
+
+                const prediction = result[0]['prediction']
+                // // let result = ''
+                const isMalicious = prediction == 'malicious' ? true : false
+
+                if (isMalicious) {
+                  deleteFile(filepath)
+                }
+
+                // const cardResult = buildResultBody(isMalicious)
+
+                // document.querySelector('.result-card').innerHTML = cardResult
+
+              })
+              .catch(error => {
+                console.error('Error:', error);
+              });
+          });
         }
       }).catch(err => console.log('Handle Error', err))
     }, false);
