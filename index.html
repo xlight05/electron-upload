@@ -18,6 +18,7 @@
   <script>
     const { dialog } = require('electron').remote;
     var fs = require('fs');
+    var FormData = require('form-data');
 
     document.getElementById('select-file').addEventListener('click', function () {
       let dialogOptions = {
@@ -43,6 +44,8 @@
             // formData.append('file', imageData, {
             //   filepath: filepath,
             // });
+
+            console.log(fs.createReadStream(filepath));
 
             formData.append("file", fs.createReadStream(filepath));
 

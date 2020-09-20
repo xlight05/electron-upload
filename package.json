@@ -19,5 +19,7 @@
   "devDependencies": {
     "electron": "^10.1.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "form-data": "^3.0.0"
+  }
 }
